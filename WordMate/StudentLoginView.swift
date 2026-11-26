@@ -81,6 +81,17 @@ struct StudentLoginView: View {
             .accessibilityLabel("매일 10분, 단어로 겨루고 성장하기")
 
             VStack(alignment: .leading, spacing: 8) {
+                NavigationLink {
+                    SignupConsentView()
+                } label: {
+                    Text("회원가입")
+                        .font(.system(size: buttonLabelSize, weight: .bold))
+                        .frame(maxWidth: .infinity, minHeight: 56)
+                        .background(Color(red: 182 / 255, green: 227 / 255, blue: 35 / 255), in: RoundedRectangle(cornerRadius: 6))
+                        .foregroundStyle(Color(red: 21 / 255, green: 22 / 255, blue: 26 / 255))
+                }
+                .accessibilityHint("회원가입 약관 동의 화면으로 이동합니다.")
+
                 Button {
                     showsLoginAvailability = true
                 } label: {
