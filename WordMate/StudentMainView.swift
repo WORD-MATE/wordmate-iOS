@@ -3,24 +3,35 @@ import SwiftUI
 struct StudentMainView: View {
     @State private var noticeTitle = ""
     @State private var showsNotice = false
+    @State private var showsNotifications = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                header
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    welcomeCard
-                    summaryCards
-                    StudentMainLearningSections(onAction: showNotice)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        welcomeCard
+                        summaryCards
+                        StudentMainLearningSections(onAction: showNotice)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 20)
-            }
-            .scrollIndicators(.hidden)
+                .scrollIndicators(.hidden)
 
-            StudentMainBottomBar(onAction: showNotice)
+                StudentMainBottomBar(onAction: showNotice)
+            }
+
+            if showsNotifications {
+                StudentNotificationOverlay(onAction: showNotice)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 52)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .zIndex(1)
+            }
         }
         .foregroundStyle(StudentMainPalette.ink)
         .background(Color.white.ignoresSafeArea())
@@ -42,11 +53,21 @@ struct StudentMainView: View {
 
             Spacer()
 
-            StudentMainNoticeButton(title: "알림", onAction: showNotice) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showsNotifications.toggle()
+                }
+            } label: {
                 Image(systemName: "bell.badge.fill")
                     .font(.system(size: 18, weight: .medium))
                     .foregroundStyle(StudentMainPalette.muted)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("알림")
+            .accessibilityValue(showsNotifications ? "열림" : "닫힘")
+            .accessibilityHint("알림 오버레이를 표시하거나 닫습니다.")
         }
         .padding(.horizontal, 20)
         .frame(height: 52)
@@ -157,4 +178,14 @@ enum StudentMainPalette {
 
 #Preview {
     StudentMainView()
+}
+
+#Preview("알림 오버레이") {
+    ZStack(alignment: .top) {
+        StudentMainView()
+
+        StudentNotificationOverlay(onAction: { _ in })
+            .padding(.horizontal, 20)
+            .padding(.top, 52)
+    }
 }
